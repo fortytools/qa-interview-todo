@@ -1,7 +1,8 @@
+const apiBaseUrl = 'http://localhost:3000';
 const todoList = document.getElementById('todo-list');
 const form = document.getElementById('todo-form');
 const input = document.getElementById('new-todo');
-const labelSelect = document.getElementById('todo-label');
+const labelSelect = document.getElementById('todo-label-select');
 const filterSelect = document.getElementById('filter-label');
 const dueDateInput = document.getElementById('todo-due-date');
 
@@ -9,27 +10,45 @@ filterSelect.addEventListener('change', applyFilter);
 let allTodos = []; // store all todos for filtering
 
 
-function getBadgeClass(label) {
-  switch (label) {
-    case 'Work': return 'bg-primary';
-    case 'Personal': return 'bg-success';
-    case 'Urgent': return 'bg-danger';
+function getBadgeClass(color) {
+  switch (color) {
+    case 'blue': return 'bg-primary';
+    case 'green': return 'bg-success';
+    case 'red': return 'bg-danger';
     default: return 'bg-secondary';
   }
 }
 
 // Fetch initial todos
-async function fetchTodos() {
-  const res = await fetch('https://jsonplaceholder.typicode.com/todos?_limit=5');
+async function fetchTodos(labelId=null) {
+  const todosUrl = new URL('todos.json', apiBaseUrl)
+  
+  if (labelId) {
+    todosUrl.searchParams.append('label_id', labelId);
+  }
+
+  const res = await fetch(todosUrl);
   const todos = await res.json();
 
-  todos.forEach((todo, index) => {
-    const labels = ['Work', 'Personal', 'Urgent', 'Other'];
-    todo.label = labels[index % labels.length];
-  });
+  allTodos = todos.todos;
+  return allTodos;
+}
 
-  allTodos = todos;
-  renderTodos(allTodos);
+async function fetchLabels() {
+  const res = await fetch(new URL('labels.json', apiBaseUrl));
+  const labels = await res.json();
+  
+  const template = document.getElementById('label-option-template');
+
+
+  labels.labels.forEach(label => {
+    const clone = template.content.cloneNode(true);
+    const option = clone.querySelector('.label-option');
+    option.value = label.id;
+    option.textContent = label.value;
+    labelSelect.appendChild(option);
+    filterSelect.appendChild(option.cloneNode(true)); // Clone for filter select
+  });
 }
 
 // Add todo to DOM
@@ -46,8 +65,8 @@ function addTodoToDOM(todo) {
 
   // Fill in the data
   titleSpan.textContent = todo.title;
-  labelBadge.textContent = todo.label;
-  labelBadge.classList.add(getBadgeClass(todo.label));
+  labelBadge.textContent = todo.label.value;
+  labelBadge.classList.add(getBadgeClass(todo.label.color));
 
   if (todo.dueDate) {
     dueDateText.textContent = new Date(todo.dueDate).toLocaleDateString();
@@ -63,15 +82,15 @@ function addTodoToDOM(todo) {
 
 // Add new todo
 async function addTodo(title, label, dueDate) {
-  const res = await fetch('https://jsonplaceholder.typicode.com/todos', {
+  const res = await fetch(new URL('todos', apiBaseUrl), {
     method: 'POST',
-    body: JSON.stringify({ title: title, completed: false }),
+    body: JSON.stringify({ title: title, due_at: dueDate, label_id: label }),
     headers: { 'Content-Type': 'application/json' },
   });
 
   const todo = await res.json();
-  todo.label = label;
-  todo.dueDate = dueDate || null; // Store null if not set
+  // todo.label = label;
+  todo.dueDate = todo.due_at
 
   allTodos.push(todo);
   applyFilter();
@@ -85,12 +104,13 @@ async function deleteTodo(element, id) {
   applyFilter(); // re-filter after delete
 }
 
-function applyFilter() {
+async function applyFilter() {
   const selected = filterSelect.value;
-  if (selected === 'All') {
-    renderTodos(allTodos);
+  if (selected === 'all') {
+    // renderTodos(allTodos);
+    console.error('You got me :P');
   } else {
-    const filtered = allTodos.filter(todo => todo.label === selected);
+    const filtered = await fetchTodos(selected);
     renderTodos(filtered);
   }
 }
@@ -99,6 +119,10 @@ function applyFilter() {
 function renderTodos(todos) {
   todoList.innerHTML = '';
   todos.forEach(addTodoToDOM);
+}
+
+async function fetchAndRenderTodos() {
+  fetchTodos().then(renderTodos);
 }
 
 // Form submit handler
@@ -115,7 +139,6 @@ form.addEventListener('submit', (e) => {
   }
 });
 
-
-
 // Initial load
-fetchTodos();
+fetchLabels();
+fetchAndRenderTodos();

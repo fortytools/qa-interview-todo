@@ -31,11 +31,10 @@
             <input type="text" id="new-todo" class="form-control" placeholder="Enter new todo" required />
           </div>
           <div class="col-md-3">
-            <select id="todo-label" class="form-select">
-              <option value="Work">Work</option>
-              <option value="Personal">Personal</option>
-              <option value="Urgent">Urgent</option>
-              <option value="Other">Other</option>
+            <select id="todo-label-select" class="form-select">
+              <template id="label-option-template">
+                <option class="label-option"></option>
+              </template>
             </select>
           </div>
           <div class="col-md-3">
@@ -49,11 +48,7 @@
         <div class="mb-3">
           <label for="filter-label" class="form-label">Filter by Label:</label>
           <select id="filter-label" class="form-select w-50">
-            <option value="All">All</option>
-            <option value="Work">Work</option>
-            <option value="Personal">Personal</option>
-            <option value="Urgent">Urgent</option>
-            <option value="Other">Other</option>
+            <option value="all">All</option>
           </select>
         </div>
 
