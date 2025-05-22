@@ -107,8 +107,8 @@ async function deleteTodo(element, id) {
 async function applyFilter() {
   const selected = filterSelect.value;
   if (selected === 'all') {
-    // renderTodos(allTodos);
-    console.error('You got me :P');
+    renderTodos(allTodos);
+    // console.error('You got me :P');
   } else {
     const filtered = await fetchTodos(selected);
     renderTodos(filtered);

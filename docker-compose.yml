@@ -1,0 +1,21 @@
+services:
+  frontend:
+    image: nginx:alpine
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./todo_api
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./todo_api/config/credentials/production.key:/rails/config/credentials/production.key
+      - ./todo_api/config/credentials/production.yml.enc:/rails/config/credentials/production.yml.enc
+      - sqlitedata:/rails/storage
+volumes:
+  sqlitedata:
