@@ -23,7 +23,9 @@ class TodosController < ApplicationController
     if @todo.save
       @todo
     else
-      render json: @todo.errors, status: :unprocessable_entity
+      Rails.logger.error(@todo.errors.inspect)
+      # render json: @todo.errors, status: :unprocessable_entity
+      render json: {}, status: :unprocessable_entity
     end
   end
 
