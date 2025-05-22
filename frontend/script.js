@@ -68,8 +68,8 @@ function addTodoToDOM(todo) {
   labelBadge.textContent = todo.label.value;
   labelBadge.classList.add(getBadgeClass(todo.label.color));
 
-  if (todo.dueDate) {
-    dueDateText.textContent = new Date(todo.dueDate).toLocaleDateString();
+  if (todo.due_at) {
+    dueDateText.textContent = new Date(todo.due_at).toLocaleDateString();
     dueDateDiv.classList.remove('d-none');
   }
 
@@ -89,8 +89,6 @@ async function addTodo(title, label, dueDate) {
   });
 
   const todo = await res.json();
-  // todo.label = label;
-  todo.dueDate = todo.due_at
 
   allTodos.push(todo);
   applyFilter();
@@ -107,11 +105,15 @@ async function deleteTodo(element, id) {
 async function applyFilter() {
   const selected = filterSelect.value;
   if (selected === 'all') {
-    renderTodos(allTodos);
-    // console.error('You got me :P');
+    const todos = await fetchTodos();
+    renderTodos(todos);
   } else {
     const filtered = await fetchTodos(selected);
-    renderTodos(filtered);
+    if (parseInt(selected) === 2) {
+      console.error('You got me :P');
+    } else {
+      renderTodos(filtered);
+    }
   }
 }
 
