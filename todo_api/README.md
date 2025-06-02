@@ -1,24 +1,57 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Overview
 
-Things you may want to cover:
+This is a Ruby on Rails API-only application. It provides a backend for managing todos via RESTful endpoints.
 
-* Ruby version
+## Requirements
 
-* System dependencies
+- Ruby 3.x
+- Rails 8.x
+- Sqlite
 
-* Configuration
+## Setup
 
-* Database creation
+1. Clone the repository:
+  ```bash
+  git clone git@github.com:fortytools/qa-interview-todo.git
+  cd qa-interview-todo/todo_api
+  ```
 
-* Database initialization
+2. Install dependencies:
+  ```bash
+  bundle install
+  ```
 
-* How to run the test suite
+3. Set up the database:
+  ```bash
+  rails db:create db:migrate
+  ```
 
-* Services (job queues, cache servers, search engines, etc.)
+4. Run the test suite:
+  ```bash
+  bundle exec rspec
+  ```
 
-* Deployment instructions
+5. Start the server:
+  ```bash
+  rails server
+  ```
 
-* ...
+## API Endpoints
+
+Typical endpoints include:
+
+- `GET /todos` — List all todos
+- `GET /todos/:id` — Show a specific todo
+- `POST /todos` — Create a new todo
+- `PUT /todos/:id` — Update a todo
+- `DELETE /todos/:id` — Delete a todo
+
+## Testing
+
+This project uses RSpec for testing. Run all tests with:
+
+```bash
+bundle exec rspec
+```
